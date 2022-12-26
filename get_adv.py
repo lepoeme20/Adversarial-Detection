@@ -7,7 +7,7 @@ from utils.utils import (
     set_seed
 )
 import config
-from attack_methods import df, pgd, fgsm, bim, cw, fab
+from attack_methods import df, pgd, fgsm, bim, cw, fab, auto, pgd2, square
 
 
 class GetADV:
@@ -16,10 +16,9 @@ class GetADV:
         self.model = network_initialization(args)
         model_path = os.path.join(args.save_path, args.model, f"{args.dataset}.pt")
         pretrained_dict = torch.load(model_path)["model_state_dict"]
-        pretrained_dict = {f'model.{k}': v for k, v in pretrained_dict.items()}
+        # pretrained_dict = {f'model.{k}': v for k, v in pretrained_dict.items()}
         self.model.load_state_dict(
-            pretrained_dict,
-            strict=False
+            pretrained_dict
         )
         self.model.eval()
 
