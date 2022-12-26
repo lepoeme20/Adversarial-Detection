@@ -102,11 +102,13 @@ class Trainer():
                     model_path
                 )
 
+#TODO: 
+# 1. resnet + cifar10, cifar100, svhn
+# 2. vgg + cifar10, cifar100, svhn
+
 if __name__ == "__main__":
     args = config.get_config()
     trainer = Trainer(args)
-    args.model='custom'
-    args.dataset='cifar10'
-    args.epochs=300
+    args.epochs=200
     args.batch_size=512
     trainer.training()
