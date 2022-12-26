@@ -48,11 +48,10 @@ class Normalize(nn.Module):
         return self.model(x)
 
 def network_initialization(args):
-    net = __import__('baselineCNN').__dict__[args.model.lower()](args.num_class).to(args.device)
+    net = __import__('baselineCNN').__dict__[args.model.lower()](args.num_class)
     net = Normalize(net, args.dataset)
-    print(net)
 
-    return net
+    return net.to(args.device)
 
 def get_dataloader(args):
     transformer = _get_transformer(args)
@@ -70,18 +69,15 @@ def _get_loader(args, transformer):
     trn_transform, tst_transform = transformer
     # call dataset
     # normal training set
-    trainset = dataset(root=data_path, download=True, train=True, transform=trn_transform)
-    try:
-        trainset, devset = torch.utils.data.random_split(
-            trainset, [int(len(trainset) * 0.7), int(len(trainset) * 0.3)]
-        )
-    except:
-        trainset, devset = torch.utils.data.random_split(
-            trainset, [int(len(trainset) * 0.7)+1, int(len(trainset) * 0.3)]
-        )
-    # validtaion, testing set
-    tstset = dataset(root=data_path, download=True, train=False, transform=tst_transform)
-
+    if data_name == 'SVHN':
+        trainset = dataset(root=data_path, download=True, split='train', transform=trn_transform)
+        trainset, devset = torch.utils.data.random_split(trainset, [int(len(trainset) * 0.7)+1, int(len(trainset) * 0.3)])
+        tstset = dataset(root=data_path, download=True, split='test', transform=tst_transform)
+    else:
+        trainset = dataset(root=data_path, download=True, train=True, transform=trn_transform)
+        trainset, devset = torch.utils.data.random_split(trainset, [int(len(trainset) * 0.7), int(len(trainset) * 0.3)])
+        # validtaion, testing set
+        tstset = dataset(root=data_path, download=True, train=False, transform=tst_transform)
     trainloader = torch.utils.data.DataLoader(
         trainset,
         batch_size=args.batch_size,
